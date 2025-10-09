@@ -1,16 +1,21 @@
 -- A. Pizza Metrics
 
--- How many pizzas were ordered?
+-- 1.How many pizzas were ordered?
 
 SELECT COUNT("pizza_id") AS Total_pizza_ordered
 FROM customer_orders;
 
--- How many unique customer orders were made?
+-- 2.How many unique customer orders were made?
 
 SELECT COUNT(DISTINCT("order_id")) AS total_unique_orders
 FROM customer_orders;
 
--- How many successful orders were delivered by each runner?
+-- 3.How many successful orders were delivered by each runner?
+
+SELECT "runner_id", COUNT("pickup_time") AS successful_orders
+FROM runner_orders
+WHERE "pickup_time" <> 'null'
+GROUP BY "runner_id";
 
 -- How many of each type of pizza was delivered?
 
