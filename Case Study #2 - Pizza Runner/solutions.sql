@@ -43,7 +43,22 @@ GROUP BY c."customer_id", pn."pizza_name"
 ORDER BY c."customer_id" ASC;
 
 
--- What was the maximum number of pizzas delivered in a single order?
+-- 6.What was the maximum number of pizzas delivered in a single order?
+
+SELECT order_id, delivered
+FROM (
+    SELECT 
+        c."order_id" AS order_id,
+        COUNT(ro."pickup_time") AS delivered,
+        RANK() OVER (ORDER BY COUNT(ro."pickup_time") DESC) AS rank
+    FROM customer_orders AS c
+    LEFT JOIN pizza_names AS pn ON c."pizza_id" = pn."pizza_id"
+    LEFT JOIN runner_orders AS ro ON c."order_id" = ro."order_id"
+    WHERE ro."pickup_time" <> 'null'
+    GROUP BY c."order_id"
+) AS ranked
+WHERE rank = 1;
+
 
 -- For each customer, how many delivered pizzas had at least 1 change and how many had no changes?
 
