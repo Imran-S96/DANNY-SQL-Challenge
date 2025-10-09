@@ -17,7 +17,7 @@ FROM runner_orders
 WHERE "pickup_time" <> 'null'
 GROUP BY "runner_id";
 
--- How many of each type of pizza was delivered?
+-- 4.How many of each type of pizza was delivered?
 
 SELECT 
 pn."pizza_name",
@@ -29,7 +29,19 @@ WHERE ro."pickup_time" <> 'null'
 GROUP BY pn."pizza_name"
 ;
 
--- How many Vegetarian and Meatlovers were ordered by each customer?
+-- 5.How many Vegetarian and Meatlovers were ordered by each customer?
+
+SELECT 
+c."customer_id",
+pn."pizza_name",
+COUNT(c."order_id") as ordered
+FROM customer_orders as c
+LEFT JOIN pizza_names as pn on c."pizza_id" = pn."pizza_id"
+LEFT JOIN runner_orders as ro on c."order_id" = ro."order_id"
+WHERE ro."pickup_time" <> 'null'
+GROUP BY c."customer_id", pn."pizza_name"
+ORDER BY c."customer_id" ASC;
+
 
 -- What was the maximum number of pizzas delivered in a single order?
 
