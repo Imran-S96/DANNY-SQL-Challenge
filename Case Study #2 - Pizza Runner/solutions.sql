@@ -79,7 +79,14 @@ GROUP BY co."customer_id"
 ORDER BY co."customer_id"
 ;
 
--- How many pizzas were delivered that had both exclusions and extras?
+-- 8.How many pizzas were delivered that had both exclusions and extras?
+
+SELECT 
+COUNT(co."pizza_id") as "delivered_with_exlusions+extras",
+FROM customer_orders as co 
+LEFT JOIN runner_orders as ro USING("order_id")
+WHERE ro."pickup_time" <> 'null' AND (co."exclusions" <> 'null' and co."exclusions" <> '') and (co."extras" <> 'null' and co."extras" <> '')
+;
 
 -- What was the total volume of pizzas ordered for each hour of the day?
 
