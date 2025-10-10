@@ -60,7 +60,24 @@ FROM (
 WHERE rank = 1;
 
 
--- For each customer, how many delivered pizzas had at least 1 change and how many had no changes?
+-- 7.For each customer, how many delivered pizzas had at least 1 change and how many had no changes?
+
+SELECT 
+co."customer_id",
+SUM(CASE 
+    WHEN ((co."exclusions" <> 'null' and co."exclusions" <> '')  
+    OR (co."extras" <> 'null' and co."extras" <> '')) 
+    THEN 1 ELSE 0 END) as "changes",
+SUM(CASE 
+    WHEN ((co."exclusions" <> 'null' and co."exclusions" <> '')  
+    OR (co."extras" <> 'null' and co."extras" <> '')) THEN 0
+    ELSE 1 END) as "no_changes"
+FROM customer_orders as co 
+LEFT JOIN runner_orders as ro USING("order_id")
+WHERE ro."pickup_time" <> 'null'
+GROUP BY co."customer_id"
+ORDER BY co."customer_id"
+;
 
 -- How many pizzas were delivered that had both exclusions and extras?
 
