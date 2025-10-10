@@ -88,6 +88,20 @@ LEFT JOIN runner_orders as ro USING("order_id")
 WHERE ro."pickup_time" <> 'null' AND (co."exclusions" <> 'null' and co."exclusions" <> '') and (co."extras" <> 'null' and co."extras" <> '')
 ;
 
--- What was the total volume of pizzas ordered for each hour of the day?
+-- 9.What was the total volume of pizzas ordered for each hour of the day?
 
--- What was the volume of orders for each day of the week?
+SELECT 
+DATE_PART('hour',"order_time") as hour_of_day,
+COUNT("pizza_id") as volume_ordered_pizza
+FROM customer_orders
+GROUP BY DATE_PART('hour',"order_time")
+ORDER BY DATE_PART('hour',"order_time");
+
+-- 10.What was the volume of orders for each day of the week?
+
+SELECT 
+DAYNAME("order_time") as day_of_week,
+COUNT("pizza_id") as volume_ordered_pizza
+FROM customer_orders
+GROUP BY DAYNAME("order_time"), DAYOFWEEK("order_time")
+ORDER BY DAYOFWEEK("order_time");
