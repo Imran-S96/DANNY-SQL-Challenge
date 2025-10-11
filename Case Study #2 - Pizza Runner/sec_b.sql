@@ -22,6 +22,16 @@ ORDER BY ro."runner_id";
 
 -- 3.Is there any relationship between the number of pizzas and how long the order takes to prepare?
 
+SELECT 
+    co."order_id",
+    COUNT(co."pizza_id") as "no._pizza",       
+    ROUND(AVG(TIMEDIFF('minute',co."order_time",ro."pickup_time"::timestamp_ntz)),0) as AVG_TIME
+FROM customer_orders as co 
+LEFT JOIN runner_orders as ro USING("order_id")
+WHERE ro."pickup_time" <> 'null'
+GROUP BY co."order_id"
+ORDER BY ROUND(AVG(TIMEDIFF('minute',co."order_time",ro."pickup_time"::timestamp_ntz)),0);
+
 
 
 -- What was the average distance travelled for each customer?
