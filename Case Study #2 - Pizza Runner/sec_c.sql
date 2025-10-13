@@ -55,6 +55,26 @@ ORDER BY COUNT(pt."topping_name") DESC
 -- Meat Lovers - Extra Bacon
 -- Meat Lovers - Exclude Cheese, Bacon - Extra Mushroom, Peppers
 
+with CO as(
+select 
+*,
+ROW_NUMBER() OVER (ORDER BY co."order_id" ) as RNK
+from customer_orders as co)
+
+SELECT
+    co."order_id",
+    pn."pizza_name"
+        || COALESCE(CASE WHEN COUNT(pt."topping_id")  > 0 THEN ' - Exclude ' || LISTAGG(DISTINCT  pt."topping_name",  ', ') END, '')
+        || COALESCE(CASE WHEN COUNT(pt1."topping_id") > 0 THEN ' - Extra '   || LISTAGG(DISTINCT  pt1."topping_name", ', ') END, '') AS toppings,
+FROM CO
+LEFT JOIN pizza_names AS pn ON co."pizza_id" = pn."pizza_id"
+LEFT JOIN LATERAL SPLIT_TO_TABLE("exclusions", ',') AS exl
+LEFT JOIN LATERAL SPLIT_TO_TABLE(IFNULL(co."extras",'null'), ',') AS ext
+LEFT JOIN pizza_toppings AS pt  ON TRY_TO_NUMBER(exl.value) = pt."topping_id"
+LEFT JOIN pizza_toppings AS pt1 ON TRY_TO_NUMBER(ext.value) = pt1."topping_id"
+GROUP BY co.RNK, co."order_id", pn."pizza_name"
+ORDER BY co.RNK, co."order_id";
+
 
 -- 5.Generate an alphabetically ordered comma separated ingredient list for each pizza order from the customer_orders table and add a 2x in front of any relevant ingredients
 -- For example: "Meat Lovers: 2xBacon, Beef, ... , Salami"
